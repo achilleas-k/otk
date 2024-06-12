@@ -43,9 +43,13 @@ otk.define:
       options: "defaults,uid=0,gid=0,umask=077,shortname=winnt"
       passno: 2
 
-otk.target.osbuild.qcow2:
+otk.target.osbuild:
   pipelines:
     - otk.include: "osbuild/buildroot.yaml"
     - otk.include: "osbuild/pipeline/tree.yaml"
     - otk.include: "osbuild/pipeline/raw.yaml"
     - otk.include: "osbuild/pipeline/xz.yaml"
+
+otk.target.somebuildtool:
+  buildoptions:
+    - otk.include: "buildtool.options.yaml"

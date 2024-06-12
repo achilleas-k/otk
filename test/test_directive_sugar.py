@@ -1,22 +1,21 @@
 import pytest
-
 from otk.context import CommonContext
+from otk.directive import resolve_variables
 from otk.error import TransformDirectiveTypeError
-from otk.directive import desugar
 
 
 def test_simple_sugar():
     context = CommonContext()
     context.define("my_var", "foo")
 
-    assert desugar(context, "${my_var}") == "foo"
+    assert resolve_variables(context, "${my_var}") == "foo"
 
 
 def test_simple_sugar_tree():
     context = CommonContext()
     context.define("my_var", [1, 2])
 
-    assert desugar(context, "${my_var}") == [1, 2]
+    assert resolve_variables(context, "${my_var}") == [1, 2]
 
 
 def test_simple_sugar_tree_fail():
@@ -26,7 +25,7 @@ def test_simple_sugar_tree_fail():
     expected_error = "string sugar resolves to an incorrect type, expected int, float, or str but got %r"
 
     with pytest.raises(TransformDirectiveTypeError, match=expected_error):
-        desugar(context, "a${my_var}")
+        resolve_variables(context, "a${my_var}")
 
 
 def test_sugar_multiple():
@@ -34,7 +33,7 @@ def test_sugar_multiple():
     context.define("a", "foo")
     context.define("b", "bar")
 
-    assert desugar(context, "${a}-${b}") == "foo-bar"
+    assert resolve_variables(context, "${a}-${b}") == "foo-bar"
 
 
 def test_sugar_multiple_fail():
@@ -46,4 +45,4 @@ def test_sugar_multiple_fail():
 
     # Fails due to non-str type
     with pytest.raises(TransformDirectiveTypeError, match=expected_error):
-        desugar(context, "${a}-${b}")
+        resolve_variables(context, "${a}-${b}")

@@ -1,9 +1,7 @@
 import argparse
 import os
 
-
-from otk.command import compile
-
+from otk.command import comp1le
 
 fake_otk_yaml = """
 otk.version: 1
@@ -25,7 +23,7 @@ def test_compile_integration_file(tmp_path):
     output_path = tmp_path / "output.txt"
 
     arguments = argparse.Namespace(input=input_path, output=output_path, target="osbuild")
-    ret = compile(arguments)
+    ret = comp1le(arguments)
     assert ret == 0
 
     assert output_path.exists()
@@ -39,7 +37,7 @@ def test_compile_integration_stdin(capsys, monkeypatch):
     monkeypatch.setattr("sys.stdin", os.fdopen(mocked_stdin))
 
     arguments = argparse.Namespace(input=None, output=None, target="osbuild")
-    ret = compile(arguments)
+    ret = comp1le(arguments)
     assert ret == 0
 
     assert capsys.readouterr().out == expected_otk_tree

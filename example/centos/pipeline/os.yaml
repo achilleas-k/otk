@@ -21,7 +21,7 @@ stages:
   - otk.include: fragment/kernel-cmdline.yaml
   - otk.include: fragment/dracut.yaml
   - otk.include: fragment/fix-bls.yaml
-  - otk.include: fragment/grub2.yaml
+  - otk.include: fragment/bootloader.yaml
 
   # General bits, could probably be split out further
   - otk.include: fragment/locale.yaml

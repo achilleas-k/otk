@@ -76,7 +76,7 @@ def define(ctx: Context, tree: Any) -> Any:
 def include(ctx: Context, tree: Any) -> Any:
     """Include a separate file."""
 
-    tree = desugar(ctx, tree)
+    tree = substitute_vars(ctx, tree)
 
     file = ctx._path / pathlib.Path(tree)
 
@@ -85,6 +85,7 @@ def include(ctx: Context, tree: Any) -> Any:
     log.info("otk.include=%s", str(file))
 
     # TODO
+    print(f"loading {file}")
     return yaml.safe_load(file.read_text())
 
 
@@ -148,14 +149,16 @@ def _op_map_join(ctx: Context, values: List[dict]) -> Any:
 
 
 @tree.must_be(str)
-def desugar(ctx: Context, tree: str) -> Any:
-    """Desugar a string. If the string consists of a single `${name}` value
-    then we return the object it refers to by looking up its name in the
-    variables.
+def substitute_vars(ctx: Context, tree: str) -> Any:
+    """Substitute variables in a string. If the string consists of a single `${name}` value then we return the object it
+    refers to by looking up its name in the variables.
 
-    If the string has anything around a variable such as `foo${name}-${bar}`
-    then we replace the values inside the string. This requires the type of
-    the variable to be replaced to be either str, int, or float."""
+    If the string has anything around a variable such as `foo${name}-${bar}` then we replace the values inside the
+    string. This requires the type of the variable to be replaced to be either str, int, or float.
+
+    ACHILLEAS: A naked variable can be replaced by an object. Variables inside strings, such as `foo${name}-${bar}` must
+    be replaced by primitive values such as str, int, or float.
+    """
 
     bracket = r"\$\{%s\}"
     pattern = bracket % r"(?P<name>[a-zA-Z0-9-_\.]+)"
@@ -182,7 +185,7 @@ def desugar(ctx: Context, tree: str) -> Any:
             # Any other type we do not
             if not isinstance(data, str):
                 raise TransformDirectiveTypeError(
-                    "string sugar resolves to an incorrect type, expected int, float, or str but got %r",
+                    "string variable resolves to an incorrect type, expected int, float, or str but got %r",
                     data,
                 )
 
@@ -192,7 +195,7 @@ def desugar(ctx: Context, tree: str) -> Any:
             # that?
             tree = re.sub(bracket % re.escape(name), data, tree)
 
-        log.debug("desugaring %r as substring to %r", name, tree)
+        log.debug("substituting %r as substring to %r", name, tree)
 
         return tree
 

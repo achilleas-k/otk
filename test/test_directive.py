@@ -1,8 +1,8 @@
 import pytest
-
 from otk.context import CommonContext
-from otk.error import TransformDirectiveArgumentError, TransformDirectiveTypeError
-from otk.directive import desugar, include, op_join
+from otk.directive import include, op_join, resolve_variables
+from otk.error import (TransformDirectiveArgumentError,
+                       TransformDirectiveTypeError)
 
 
 def test_include_unhappy():
@@ -75,13 +75,13 @@ def test_desugar():
     ctx.define("int", 1)
     ctx.define("float", 1.1)
 
-    assert desugar(ctx, "") == ""
-    assert desugar(ctx, "${str}") == "bar"
-    assert desugar(ctx, "a${str}b") == "abarb"
-    assert desugar(ctx, "${int}") == 1
-    assert desugar(ctx, "a${int}b") == "a1b"
-    assert desugar(ctx, "${float}") == 1.1
-    assert desugar(ctx, "a${float}b") == "a1.1b"
+    assert resolve_variables(ctx, "") == ""
+    assert resolve_variables(ctx, "${str}") == "bar"
+    assert resolve_variables(ctx, "a${str}b") == "abarb"
+    assert resolve_variables(ctx, "${int}") == 1
+    assert resolve_variables(ctx, "a${int}b") == "a1b"
+    assert resolve_variables(ctx, "${float}") == 1.1
+    assert resolve_variables(ctx, "a${float}b") == "a1.1b"
 
 
 def test_desugar_unhappy():
@@ -89,7 +89,7 @@ def test_desugar_unhappy():
     ctx.define("dict", {})
 
     with pytest.raises(TransformDirectiveTypeError):
-        desugar(ctx, 1)
+        resolve_variables(ctx, 1)
 
     with pytest.raises(TransformDirectiveTypeError):
-        desugar(ctx, "a${dict}b")
+        resolve_variables(ctx, "a${dict}b")
