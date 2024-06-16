@@ -21,23 +21,23 @@ def process_dict(data, defines):
             print(f"Defining: {v}")
             defines.update(v)
         else:
-            data[k] = process(v, defines)
+            data[k] = process_value(v, defines)
 
     return data
 
 
 def process_list(data, defines):
     for idx, item in enumerate(data.copy()):
-        data[idx] = process(item, defines)
+        data[idx] = process_value(item, defines)
     return data
 
 
 def process_include(path: str, defines: dict) -> dict:
     with open(path, mode="r", encoding="utf=8") as fp:
-        return process(yaml.safe_load(fp), defines)
+        return process_value(yaml.safe_load(fp), defines)
 
 
-def process(data, defines):
+def process_value(data, defines):
     if isinstance(data, dict):
         return process_dict(data, defines)
     if isinstance(data, list):
