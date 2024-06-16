@@ -69,7 +69,11 @@ def process_include(path: str, defines: dict, cwd: str) -> dict:
     """
     path = os.path.join(cwd, path)
     with open(path, mode="r", encoding="utf=8") as fp:
-        return process_value(yaml.safe_load(fp), defines, cwd=os.path.dirname(path))
+        data = yaml.safe_load(fp)
+    if data is not None:
+        return process_value(data, defines, cwd=os.path.dirname(path))
+    return {}
+
 
 
 def process_value(data, defines, cwd):
