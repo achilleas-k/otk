@@ -30,6 +30,7 @@ def process_dict(data, defines):
         elif k.startswith("otk.define"):
             print(f"Defining: {v}")
             defines.update(v)
+            del data[k]
         else:
             data[k] = process_value(v, defines)
 
