@@ -9,10 +9,13 @@ def replace_define(value, defines):
     """
     Replace a variable in a string with the value from the defines.
     """
-    print(f"Replacing value {value}")
+    if r"${" not in value:
+        return value
+    print(f"Replacing value {value} ->", end=" ")
     for k, v in defines.items():
         value = value.replace(f"${{{k}}}", v)
-    return value
+    print(value)
+    return replace_define(value, defines)
 
 
 def process_dict(data, defines, cwd):
