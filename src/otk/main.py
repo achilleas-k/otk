@@ -20,6 +20,12 @@ def replace_define(value, defines):
     return replace_define(value, defines)
 
 
+def process_defines(data, defines):
+    for k, v in data.items():
+        defines[k] = replace_define(v, defines)
+    return defines
+
+
 def process_dict(data, defines, cwd):
     """
     Dictionaries are iterated through and both the keys and values are processed.
@@ -37,7 +43,7 @@ def process_dict(data, defines, cwd):
             data.update(process_include(v, defines, cwd))
         elif k.startswith("otk.define"):
             print(f"Defining {v}")
-            defines.update(v)
+            defines = process_defines(v, defines)
             del data[k]
         elif k.startswith("otk.target") or k.startswith("otk.version"):
             print(f"Dropping {k}")
