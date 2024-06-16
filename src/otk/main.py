@@ -26,7 +26,7 @@ def process_defines(data, defines):
     return defines
 
 
-def process_dict(data, defines, cwd):
+def process_dict(data, defines, cur_file):
     """
     Dictionaries are iterated through and both the keys and values are processed.
     Keys define how a value is interpreted:
@@ -40,7 +40,7 @@ def process_dict(data, defines, cwd):
         if k.startswith("otk.include"):
             print(f"Loading {v}")
             del data[k]
-            data.update(process_include(v, defines, cwd))
+            data.update(process_include(v, defines, cur_file))
         elif k.startswith("otk.define"):
             print(f"Defining {v}")
             defines = process_defines(v, defines)
@@ -49,41 +49,45 @@ def process_dict(data, defines, cwd):
             print(f"Dropping {k}")
             del data[k]
         else:
-            data[k] = process_value(v, defines, cwd)
+            data[k] = process_value(v, defines, cur_file)
 
     return data
 
 
-def process_list(data, defines, cwd):
+def process_list(data, defines, cur_file):
     """
     Process each value in a list.
     """
     for idx, item in enumerate(data.copy()):
-        data[idx] = process_value(item, defines, cwd)
+        data[idx] = process_value(item, defines, cur_file)
     return data
 
 
-def process_include(path: str, defines: dict, cwd: str) -> dict:
+def process_include(path: str, defines: dict, cur_file: str) -> dict:
     """
     Load a yaml file and send it to process_value() for processing.
+
+    The cur_file argument should be the path to the file that includes the otk.include line, not the path to the new
+    file that will start processing after this call.
     """
-    path = os.path.join(cwd, path)
+    # resolve 'path' relative to 'cur_file'
+    cur_path = os.path.dirname(cur_file)
+    path = os.path.join(cur_path, path)
     with open(path, mode="r", encoding="utf=8") as fp:
         data = yaml.safe_load(fp)
     if data is not None:
-        return process_value(data, defines, cwd=os.path.dirname(path))
+        return process_value(data, defines, cur_file=path)
     return {}
 
 
-
-def process_value(data, defines, cwd):
+def process_value(data, defines, cur_file):
     """
     Process a dictionary value based on its type.
     """
     if isinstance(data, dict):
-        return process_dict(data, defines, cwd)
+        return process_dict(data, defines, cur_file)
     if isinstance(data, list):
-        return process_list(data, defines, cwd)
+        return process_list(data, defines, cur_file)
     if isinstance(data, str):
         data = replace_define(data, defines)
     return data
@@ -94,7 +98,7 @@ def main():
     defines: dict[str, Any] = {}
 
     # Treat the entrypoint as an include
-    data = process_include(path, defines, cwd=".")
+    data = process_include(path, defines, cur_file="")
 
     print(defines)
     print("---")
