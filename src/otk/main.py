@@ -73,8 +73,11 @@ def process_include(path: str, defines: dict, cur_file: str) -> dict:
     # resolve 'path' relative to 'cur_file'
     cur_path = os.path.dirname(cur_file)
     path = os.path.join(cur_path, path)
-    with open(path, mode="r", encoding="utf=8") as fp:
-        data = yaml.safe_load(fp)
+    try:
+        with open(path, mode="r", encoding="utf=8") as fp:
+            data = yaml.safe_load(fp)
+    except FileNotFoundError as fnfe:
+        raise FileNotFoundError(f"file {path} referenced from {cur_file} was not found") from fnfe
     if data is not None:
         return process_value(data, defines, cur_file=path)
     return {}
