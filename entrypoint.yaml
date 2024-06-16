@@ -5,7 +5,7 @@ otk.define:
 
 pipelines:
   - name: "build"
-    runner: "org.osbuild.{distro}"
+    runner: "org.osbuild.${distro}"
     stages:
       - type: "org.osbuild.rpm"
         inputs:
