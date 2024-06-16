@@ -9,6 +9,8 @@ def replace_define(value, defines):
     """
     Replace a variable in a string with the value from the defines.
     """
+    if not isinstance(value, str):
+        return value
     if r"${" not in value:
         return value
     print(f"Replacing value {value} ->", end=" ")
