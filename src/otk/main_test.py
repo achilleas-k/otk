@@ -1,4 +1,4 @@
-from main import process_include
+from otk.main import process_include
 
 expected_result = {
     'version': '1',

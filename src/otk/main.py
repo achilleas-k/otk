@@ -10,7 +10,7 @@ def replace_define(value, defines):
     """
     print(f"Replacing value {value}")
     for k, v in defines.items():
-        value = value.replace(f"{{{k}}}", v)
+        value = value.replace(f"${{{k}}}", v)
     return value
 
 
@@ -28,8 +28,11 @@ def process_dict(data, defines):
             del data[k]
             data.update(process_include(v, defines))
         elif k.startswith("otk.define"):
-            print(f"Defining: {v}")
+            print(f"Defining {v}")
             defines.update(v)
+            del data[k]
+        elif k.startswith("otk.target") or k.startswith("otk.version"):
+            print(f"Dropping {k}")
             del data[k]
         else:
             data[k] = process_value(v, defines)
