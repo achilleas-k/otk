@@ -63,5 +63,5 @@ expected_result = {
 
 
 def test_example():
-    data = process_include("entrypoint.yaml", {}, ".")
+    data = process_include("entrypoint.yaml", {})
     assert data == expected_result

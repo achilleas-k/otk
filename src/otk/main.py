@@ -1,4 +1,4 @@
-import os
+import pathlib
 import sys
 from typing import Any
 
@@ -40,6 +40,7 @@ def process_dict(data, defines, cur_file):
         if k.startswith("otk.include"):
             print(f"Loading {v}")
             del data[k]
+            v = pathlib.Path(v)
             data.update(process_include(v, defines, cur_file))
         elif k.startswith("otk.define"):
             print(f"Defining {v}")
@@ -63,7 +64,7 @@ def process_list(data, defines, cur_file):
     return data
 
 
-def process_include(path: str, defines: dict, cur_file: str) -> dict:
+def process_include(path: pathlib.Path, defines: dict, cur_file=pathlib.Path()) -> dict:
     """
     Load a yaml file and send it to process_value() for processing.
 
@@ -71,8 +72,8 @@ def process_include(path: str, defines: dict, cur_file: str) -> dict:
     file that will start processing after this call.
     """
     # resolve 'path' relative to 'cur_file'
-    cur_path = os.path.dirname(cur_file)
-    path = os.path.join(cur_path, path)
+    cur_path = cur_file.parent
+    path = cur_path / path
     try:
         with open(path, mode="r", encoding="utf=8") as fp:
             data = yaml.safe_load(fp)
@@ -97,11 +98,11 @@ def process_value(data, defines, cur_file):
 
 
 def main():
-    path = sys.argv[1]
+    path = pathlib.Path(sys.argv[1])
     defines: dict[str, Any] = {}
 
     # Treat the entrypoint as an include
-    data = process_include(path, defines, cur_file="")
+    data = process_include(path, defines, cur_file=pathlib.Path())
 
     print(defines)
     print("---")
