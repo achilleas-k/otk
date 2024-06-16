@@ -1,0 +1,11 @@
+# This example shows `otk.define` usage in an `otk` omnifest.
+#
+# The results of compiling this omnifest are available in `01-define.json`.
+otk.version: "1"
+
+otk.define.name:
+  a: "tree"
+
+pipelines:
+  - a: "${a}"
+  - a: "${a}/b"
