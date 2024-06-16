@@ -29,6 +29,8 @@ def process_dict(data, defines, cwd):
     - Values under any other key are processed as normal values (see process_value()).
     """
     for k, v in data.copy().items():
+        # replace any variables in a value immediately before doing anything else
+        v = replace_define(v, defines)
         if k.startswith("otk.include"):
             print(f"Loading {v}")
             del data[k]
