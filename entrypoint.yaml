@@ -18,6 +18,10 @@ pipelines:
                   metadata:
                     rpm.check_gpg: true
       - otk.include.selinux: "selinux.yaml"
+  - name: "os"
+    build: "name:build"
+    stages:
+      - otk.include.os: "os.yaml"
 
 sources:
   otk.include.selinux: "sources.yaml"
