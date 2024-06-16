@@ -1,0 +1,4 @@
+org.osbuild.curl:
+  items:
+    sha256:aaa:
+      url: "https://example.com"

@@ -1,0 +1,23 @@
+version: "1"
+
+otk.define:
+  distro: "fedora40"
+
+pipelines:
+  - name: "build"
+    runner: "org.osbuild.{distro}"
+    stages:
+      - type: "org.osbuild.rpm"
+        inputs:
+          packages:
+            type: "org.osbuild.files"
+            origin: "org.osbuild.source"
+            references:
+              - id: "sha256:7e635d208b2d3191973fbce9b2ee0a470204fa121270d9aa297ed5c3546f520b"
+                options:
+                  metadata:
+                    rpm.check_gpg: true
+      - otk.include.selinux: "selinux.yaml"
+
+sources:
+  otk.include.selinux: "sources.yaml"
