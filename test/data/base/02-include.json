@@ -2,7 +2,9 @@
   "pipelines": [
     {
       "foo": "bar",
-      "bar": "foo"
+      "bar": "foo",
+      "foobar": "baz",
+      "twotwo": "2"
     }
   ]
 }
