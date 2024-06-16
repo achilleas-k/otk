@@ -1,0 +1,19 @@
+{
+  "pipelines": [
+    {
+      "foo": "bar",
+      "bar": "foo",
+      "foobar": "baz",
+      "twotwo": "2"
+    }
+  ],
+  "sources": {
+    "org.osbuild.curl": {
+      "items": {
+        "sha256:aaa": {
+          "url": "https://example.com"
+        }
+      }
+    }
+  }
+}
