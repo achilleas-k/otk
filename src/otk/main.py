@@ -1,4 +1,5 @@
 import pathlib
+import re
 import sys
 from typing import Any
 
@@ -15,23 +16,60 @@ def get_value(defines, key):
 
 def replace_define(value, defines):
     """
-    Replace a variable in a string with the value from the defines.
+    Replace variables in a string. If the string consists of a single `${name}` value then we return the object it
+    refers to by looking up its name in the defines.
+
+    If the string has anything around a variable such as `foo${name}-${bar}` then we replace the values inside the
+    string. This requires the type of the variable to be replaced to be either str, int, or float.
     """
+
+    # return early if it's not a string
     if not isinstance(value, str):
         return value
-    if r"${" not in value:
-        # TODO: use the regex from otk/main
+
+    # return early if there's no variable symbol
+    if "$" not in value:
         return value
-    print(f"Replacing value {value} ->", end=" ")
+
     orig = value
-    for k in defines.keys():
-        # TODO: use the regex from otk/main
-        if value.startswith(r"${") and value.endswith(r"}"):  # full replacement
-            return replace_define(get_value(defines, value[2:-1]), defines)
-        value = value.replace(f"${{{k}}}", str(get_value(defines, k)))
-    print(value)
+    bracket = r"\$\{%s\}"
+    pattern = bracket % r"(?P<name>[a-zA-Z0-9-_\.]+)"
+
+    # If there is a single match and its span is the entire value then we return the matching value from defines
+    # directly.
+    if match := re.fullmatch(pattern, value):
+        return get_value(defines, match.group("name"))
+
+    # Let's find all matches if there are any. We use `list(re.finditer(...))`
+    # to get a list of match objects instead of `re.findall` which gives a list
+    # of matchgroups.
+
+    # If there are multiple matches then we always interpolate strings.
+    if matches := list(re.finditer(pattern, value)):
+        for match in matches:
+            name = match.group("name")
+            data = get_value(defines, name)
+
+            # We know how to turn ints and floats into str's
+            if isinstance(data, (int, float)):
+                data = str(data)
+
+            # Any other type we do not
+            if not isinstance(data, str):
+                raise TypeError(
+                    f"string variable resolves to an incorrect type, expected int, float, or str but got {repr(data)}"
+                )
+
+            # Replace all occurrences of this name in the str
+
+            # NOTE: this means we can recursively replace names, do we want that?
+            value = re.sub(bracket % re.escape(name), data, value)
+
+        print(f"resolving {repr(name)} as substring to {repr(value)}", name, value)
+
     if value == orig:
-        raise KeyError(f"{value} not found in defines")
+        raise KeyError(f"{orig} not found in defines")
+
     return replace_define(value, defines)
 
 
