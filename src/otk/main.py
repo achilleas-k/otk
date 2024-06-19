@@ -30,9 +30,15 @@ def replace_define(value, defines):
     return replace_define(value, defines)
 
 
-def process_defines(data, defines):
+def process_defines(data, defines, cur_file):
     for k, v in data.items():
-        defines[k] = replace_define(v, defines)
+        if k.startswith("otk."):
+            return process_dict({k: v}, defines, cur_file)
+        if isinstance(defines.get(k), dict):
+            define = defines[k]
+            define.update(replace_define(v, defines))
+        else:
+            defines[k] = replace_define(v, defines)
     return defines
 
 
@@ -54,7 +60,7 @@ def process_dict(data, defines, cur_file):
             data.update(process_include(v, defines, cur_file))
         elif k.startswith("otk.define"):
             print(f"Defining {v}")
-            defines = process_defines(v, defines)
+            defines = process_defines(v, defines, cur_file)
             del data[k]
         elif k.startswith("otk.target") or k.startswith("otk.version"):
             print(f"Dropping {k}")
