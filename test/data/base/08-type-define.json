@@ -1,5 +1,7 @@
 {
   "pipelines": [
-    "string"
-  ]
+      "string"
+  ],
+  "version": "2",
+  "sources": {}
 }

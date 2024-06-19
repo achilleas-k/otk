@@ -7,5 +7,6 @@ otk.define.name:
         - - 1
         - - 2
 
-pipelines:
-  - foo: ${foo}
+otk.target.osbuild.name:
+  pipelines:
+    - foo: ${foo}

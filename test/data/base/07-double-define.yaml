@@ -7,7 +7,8 @@ otk.define.a:
 otk.define.b:
   zoo: 3
 
-pipelines:
-  - ${bar}
-  - ${baz}
-  - ${zoo}
+otk.target.osbuild.name:
+  pipelines:
+    - ${bar}
+    - ${baz}
+    - ${zoo}

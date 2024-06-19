@@ -8,5 +8,6 @@ otk.define.a:
 otk.define.b:
   bar: "string"
 
-pipelines:
-  - ${bar}
+otk.target.osbuild.name:
+  pipelines:
+    - ${bar}
