@@ -62,7 +62,16 @@ def process_dict(data, defines, cur_file):
             print(f"Defining {v}")
             defines = process_defines(v, defines, cur_file)
             del data[k]
-        elif k.startswith("otk.target") or k.startswith("otk.version"):
+        elif k.startswith("otk.target"):
+            print("Replacing otk.target")
+            # just assume all our targets are osbuild for now
+            # pop the contents of data[k] one level up
+            v = data.pop(k)
+            data.update(process_value(v, defines, cur_file))
+            data["version"] = "2"
+            if "sources" not in data:
+                data["sources"] = {}
+        elif k.startswith("otk.version"):
             print(f"Dropping {k}")
             del data[k]
         else:
