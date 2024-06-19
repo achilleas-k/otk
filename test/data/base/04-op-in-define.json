@@ -1,9 +1,0 @@
-{
-  "pipelines": [
-    {
-      "foo": [1, 2]
-    }
-  ],
-  "version": "2",
-  "sources": {}
-}
