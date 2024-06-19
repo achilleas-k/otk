@@ -20,21 +20,29 @@ def replace_define(value, defines):
     if not isinstance(value, str):
         return value
     if r"${" not in value:
+        # TODO: use the regex from otk/main
         return value
     print(f"Replacing value {value} ->", end=" ")
-    for k, v in defines.items():
+    for k in defines.keys():
+        # TODO: use the regex from otk/main
         if value.startswith(r"${") and value.endswith(r"}"):  # full replacement
             return replace_define(get_value(defines, value[2:-1]), defines)
         value = value.replace(f"${{{k}}}", str(get_value(defines, k)))
     print(value)
+    # TODO: guard against infinite recursion (new value == old value)
     return replace_define(value, defines)
 
 
 def process_defines(data, defines, cur_file):
     for k, v in data.items():
         if k.startswith("otk."):
+            # Can be an otk.define, which will essentially be ignored or an otk.include, which will become the define
+            # block.
+            # TODO: disallow other directives?
             return process_dict({k: v}, defines, cur_file)
         if isinstance(defines.get(k), dict):
+            # defines[k] already exists and is a dictionary: merge in the new values
+            # TODO: what if v isn't a dictionary?
             define = defines[k]
             define.update(replace_define(v, defines))
         else:
