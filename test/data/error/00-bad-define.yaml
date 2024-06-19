@@ -1,0 +1,5 @@
+otk.define.test:
+  alpha: "a"
+
+pipelines:
+  name: "${beta}"
