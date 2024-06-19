@@ -37,11 +37,14 @@ def replace_define(value, defines):
 
 def process_defines(data, defines, cur_file):
     for k, v in data.items():
-        if k.startswith("otk."):
-            # Can be an otk.define, which will essentially be ignored or an otk.include, which will become the define
-            # block.
-            # TODO: disallow other directives?
-            return process_dict({k: v}, defines, cur_file)
+        if k.startswith("otk.define"):
+            # nested otk.define: process the value
+            return process_defines(v, defines, cur_file)
+        if k.startswith("otk.include"):
+            # Include file and it will become the define block.
+            incl = process_dict({k: v}, defines, cur_file)
+            print(f"got includes {incl}")
+            defines.update(incl)
         if isinstance(defines.get(k), dict):
             # defines[k] already exists and is a dictionary: merge in the new values
             # TODO: what if v isn't a dictionary?
