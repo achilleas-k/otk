@@ -5,6 +5,14 @@ from typing import Any
 import yaml
 
 
+def get_value(defines, key):
+    if "." not in key:
+        return defines[key]
+
+    k, rest = key.split(".", 1)
+    return get_value(defines[k], rest)
+
+
 def replace_define(value, defines):
     """
     Replace a variable in a string with the value from the defines.
@@ -15,7 +23,9 @@ def replace_define(value, defines):
         return value
     print(f"Replacing value {value} ->", end=" ")
     for k, v in defines.items():
-        value = value.replace(f"${{{k}}}", v)
+        if value.startswith(r"${") and value.endswith(r"}"):  # full replacement
+            return replace_define(get_value(defines, value[2:-1]), defines)
+        value = value.replace(f"${{{k}}}", str(get_value(defines, k)))
     print(value)
     return replace_define(value, defines)
 
