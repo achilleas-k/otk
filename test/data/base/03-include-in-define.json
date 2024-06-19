@@ -1,0 +1,8 @@
+{
+  "pipelines": [
+    {
+      "foo": "bar",
+      "bar": "foo"
+    }
+  ]
+}

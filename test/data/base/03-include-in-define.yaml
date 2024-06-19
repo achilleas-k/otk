@@ -1,0 +1,8 @@
+otk.version: "1"
+
+otk.define.name:
+  otk.include: "03-include-in-define/example.yaml"
+
+pipelines:
+  - foo: ${foo}
+    bar: ${bar}
