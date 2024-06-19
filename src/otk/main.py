@@ -85,9 +85,10 @@ def process_defines(data, defines, cur_file):
             defines.update(incl)
         if isinstance(defines.get(k), dict):
             # defines[k] already exists and is a dictionary: merge in the new values
-            # TODO: what if v isn't a dictionary?
+            print(f"defines for {k} already exists and is dict - merging")
             define = defines[k]
-            define.update(replace_define(v, defines))
+            # TODO: what if v isn't a dictionary?
+            define.update(process_defines(v, defines, cur_file))
         else:
             defines[k] = replace_define(v, defines)
     return defines
