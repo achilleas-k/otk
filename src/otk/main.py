@@ -76,10 +76,11 @@ def replace_define(value, defines):
 def process_defines(data, defines, cur_file):
     for k, v in data.items():
         if k.startswith("otk.define"):
-            # nested otk.define: process the value
+            # nested otk.define: process the value as is
             return process_defines(v, defines, cur_file)
         if k.startswith("otk.include"):
             # Include file and it will become the define block.
+            print("processing include inside define block")
             incl = process_dict({k: v}, defines, cur_file)
             print(f"got includes {incl}")
             defines.update(incl)
@@ -90,7 +91,14 @@ def process_defines(data, defines, cur_file):
             # TODO: what if v isn't a dictionary?
             define.update(process_defines(v, defines, cur_file))
         else:
-            defines[k] = replace_define(v, defines)
+            print(f"setting {k} -> {v}")
+            if isinstance(v, dict):
+                # the value is a dict: process it recursively
+                print(f"recursively resolving {v}")
+                defines[k] = process_defines(v, defines, cur_file)
+            else:
+                # value is simple: run it through replace_define() to resolve any variables and set the define
+                defines[k] = replace_define(v, defines)
     return defines
 
 
