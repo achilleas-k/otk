@@ -1,0 +1,14 @@
+otk.version: "1"
+
+otk.define.a:
+  top:
+    nested_1: 1
+    nested_2: 2
+
+otk.define.b:
+  top:
+    nested_3: 3
+
+otk.target.osbuild.name:
+  pipelines:
+    - ${top}

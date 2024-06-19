@@ -1,0 +1,11 @@
+{
+  "pipelines": [
+    {
+      "nested_1": 1,
+      "nested_2": 2,
+      "nested_3": 3
+    }
+  ],
+  "version": "2",
+  "sources": {}
+}
