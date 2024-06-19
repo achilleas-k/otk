@@ -23,13 +23,15 @@ def replace_define(value, defines):
         # TODO: use the regex from otk/main
         return value
     print(f"Replacing value {value} ->", end=" ")
+    orig = value
     for k in defines.keys():
         # TODO: use the regex from otk/main
         if value.startswith(r"${") and value.endswith(r"}"):  # full replacement
             return replace_define(get_value(defines, value[2:-1]), defines)
         value = value.replace(f"${{{k}}}", str(get_value(defines, k)))
     print(value)
-    # TODO: guard against infinite recursion (new value == old value)
+    if value == orig:
+        raise KeyError(f"{value} not found in defines")
     return replace_define(value, defines)
 
 
